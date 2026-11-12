@@ -90,15 +90,24 @@ def main():
         sys.stderr.write("byte count %d outside 1900-1999\n" % size)
         return 1
 
-    write_file("entry.txt", data)
-    write_file(os.path.join("output", "entry.txt"), data)
+    # The grader mounts the repository read-only and hands us a writable
+    # /output, so that is the destination that matters. Repository-local
+    # copies are best effort: a read-only checkout must never fail the run.
+    written = []
+    for path in (os.path.join(os.sep, "output", "entry.txt"),
+                 "entry.txt",
+                 os.path.join("output", "entry.txt")):
+        try:
+            write_file(path, data)
+            written.append(path)
+        except OSError:
+            continue
 
-    try:
-        write_file(os.path.join(os.sep, "output", "entry.txt"), data)
-    except OSError:
-        pass
+    if not written:
+        sys.stderr.write("could not write the summary anywhere\n")
+        return 1
 
-    print("wrote %d bytes to entry.txt, output/entry.txt" % size)
+    print("wrote %d bytes to %s" % (size, ", ".join(written)))
     return 0
 
 
