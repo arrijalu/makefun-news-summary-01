@@ -8,11 +8,17 @@ summary = """Global News Summary - Wednesday, November 11, 2026
 4. Science & Environment: Renewable energy deployment milestones were surpassed across Europe and Asia, accelerating the global transition toward smart-grid infrastructure.
 """
 
-os.makedirs('/output', exist_ok=True)
-with open('/output/entry.txt', 'w', encoding='utf-8') as f:
+os.makedirs('output', exist_ok=True)
+with open('output/entry.txt', 'w', encoding='utf-8') as f:
     f.write(summary.strip())
 
-# Also write to local entry.txt for safety
+try:
+    os.makedirs('/output', exist_ok=True)
+    with open('/output/entry.txt', 'w', encoding='utf-8') as f:
+        f.write(summary.strip())
+except Exception:
+    pass
+
 with open('entry.txt', 'w', encoding='utf-8') as f:
     f.write(summary.strip())
 
