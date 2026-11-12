@@ -1,133 +1,69 @@
-"""Write an English summary of world news for Wednesday, 11 November 2026.
-
-Outputs the same text to output/entry.txt, entry.txt, and (when writable)
-/output/entry.txt so container-style graders can pick it up.
-
-Structure: one lead paragraph, then themed sections ordered by global impact,
-each item a single tight sentence pair (what happened -> why it matters).
+# -*- coding: utf-8 -*-
 """
-
+main.py - News Summary Generator for 11 November 2026
+"""
 import os
 import sys
 
-TITLE = "World News Summary - Wednesday, 11 November 2026"
+def generate_summary():
+    facts = [
+        # 1. Trilateral talks & Russia ceasefire rejection
+        "US Secretary of State Marco Rubio called trilateral US-Russia-Ukraine talks in Abu Dhabi 'very productive'; Russia rejected European ceasefire proposals. (AA/APEX)",
+        # 2. Iran war
+        "After meeting Qatar's PM, President Trump said the war with Iran is 'militarily effectively over'. (AP/NPR)",
+        # 3. Venezuela protectorate
+        "A year after US forces ousted Nicolas Maduro, Venezuela has become a US protectorate. (NYT)",
+        # 4. COP31 summit opening
+        "The COP31 UN climate summit opened in Antalya, Turkiye; Turkiye seeks to raise electricity's share of global energy to 35% by 2035; President Erdogan and UN chief Guterres spoke. (Anadolu/AA)",
+        # 5. COP31 Gaza
+        "At COP31 Erdogan called Israel's war in Gaza an 'ecocide' and urged Israel to let aid in. (AP)",
+        # 6. China trade surplus
+        "China's trade surplus passed $1.04 trillion in the first ten months of 2026, a record; October exports exceeded imports by $105.3 billion. (NYT)",
+        # 7. Gen Z protests
+        "Gen Z-led protests spread across several countries, described as a global political awakening. (NYT)",
+        # 8. German deindustrialisation
+        "German towns faced auto-sector layoffs and plant cutbacks, deepening deindustrialisation fears. (AA)",
+        # 9. House Hegseth impeachment
+        "The House voted 211-204 to send an impeachment resolution against Defense Secretary Pete Hegseth to committee, killing it. (AA)",
+        # 10. Trump BBC suit
+        "A US judge let Trump's defamation suit against the BBC proceed, dropped one claim, and ordered his deposition by 11 December. (AP)",
+        # 11. Brazil Facebook fine
+        "A Brazilian court fined Facebook $1.3 million for failing to comply with orders during the election. (AP)",
+        # 12. US beef prices
+        "US beef prices hit records as the cattle herd fell to its smallest level in 75 years. (WSJ)",
+        # 13. Pope Leo Argentina visit
+        "Pope Leo ended an Argentina visit with a Mass for about two million people and left for Peru, his second homeland. (AP)",
+        # 14. Darchiev death
+        "Russia's ambassador to the United States, Alexander Darchiev, died at 66. (AP)",
+        # 15. Atacama desert bloom
+        "Rare rains turned about 7,000 square miles of Chile's Atacama Desert into its biggest wildflower bloom in decades. (NPR)"
+    ]
 
-LEAD = (
-    "Wednesday's news was defined by stalled diplomacy and stubborn economics: "
-    "US-mediated Ukraine talks produced a major prisoner exchange but no peace "
-    "framework, Washington's political centre of gravity shifted after the midterms, "
-    "and a hot US inflation print hardened bets on another Federal Reserve rate hike."
-)
+    header = "GLOBAL NEWS SUMMARY BRIEFING -- WEDNESDAY, 11 NOVEMBER 2026\n\n"
+    body = "\n\n".join(f"{i+1}. {fact}" for i, fact in enumerate(facts))
+    footer = "\n\n[End of Global News Briefing -- 11 November 2026]"
+    
+    return header + body + footer
 
-SECTIONS = [
-    (
-        "War in Ukraine",
-        [
-            "The first direct Russia-Ukraine talks in nine months closed in Abu Dhabi under US mediation.",
-            "The two delegations agreed the largest prisoner-of-war exchange since the 2022 invasion, but no ceasefire or territorial framework emerged.",
-            "Washington framed the exchange as proof that dialogue is viable; Kyiv and Moscow signalled the core disputes remain untouched.",
-        ],
-    ),
-    (
-        "United States politics",
-        [
-            "House Republicans blocked an impeachment effort against Defense Secretary Pete Hegseth by a 211-204 party-line procedural vote, burying the charges in committee.",
-            "Republicans elected Jim Jordan as House leader after sweeping midterm losses and re-elected John Thune in the Senate, while Democrats prepare to take a House majority of at least 256 seats in January.",
-            "Democratic senators Bernie Sanders and Elissa Slotkin publicly withheld support for Chuck Schumer as majority leader, opening an early leadership fight.",
-        ],
-    ),
-    (
-        "Israel, Gaza and Iran",
-        [
-            "Israeli strikes killed at least eight Palestinians in Gaza City and Khan Younis and a 14-year-old boy during a West Bank raid, despite the US-brokered ceasefire.",
-            "Prime Minister Benjamin Netanyahu denied Israeli responsibility for conditions in Gaza camps, while the US-backed Board of Peace accused Israel of blocking winter supplies, and Turkey's president called the situation an \"ecocide\" at COP31.",
-            "US prosecutors charged three Iran-backed operatives over roughly 20 attacks, including an alleged plot against a UK base housing US troops; separately, a US Army soldier was arrested in the UK on suspicion of spying for Russia.",
-        ],
-    ),
-    (
-        "Climate - COP31 in Antalya",
-        [
-            "Heads of state gathered in Antalya, Turkiye, for the COP31 Leaders' Summit, hosted under the theme \"Towards a Sustainable, Resilient and Equitable Future\".",
-            "UN Secretary-General Antonio Guterres urged a new global climate justice pact financed by fossil-fuel levies, warning this is \"make or break\" time as unresolved finance questions dominate the talks.",
-            "The summit follows a year of deadly floods and heat waves, with developing economies pressing for faster adaptation finance and clean-energy transition.",
-        ],
-    ),
-    (
-        "Markets and economy",
-        [
-            "US stocks fell on hotter-than-expected October CPI then rebounded the next session: the Dow lost 0.3%, the S&P 500 0.4% and the Nasdaq 0.7% before rallying roughly 1.3-1.6%.",
-            "Traders now fully price a December Federal Reserve rate hike, with some positioning for a 50 basis point move after Fed Governor Christopher Waller floated an \"upsized\" increase.",
-            "Treasury Secretary Scott Bessent called for more balanced US-China trade ties ahead of a Trump-Xi meeting in Shenzhen, while Nvidia shares slid for a second day on AI-valuation nerves.",
-        ],
-    ),
-    (
-        "Health and society",
-        [
-            "DR Congo's Ebola outbreak passed 11,000 cases - its deadliest on record - while Kenya discharged its last patient and began the countdown to an Ebola-free declaration.",
-            "The United States was set to lose its measles-free status this week.",
-            "Millions of Spanish workers staged the country's first general strike in 14 years over housing costs, ahead of a national election; Brazil fined Meta's Facebook 1.3 million dollars for failing to comply with court orders during its election.",
-        ],
-    ),
-]
-
-
-def build_summary() -> str:
-    """Render title + lead + themed sections into one plain-text document."""
-    parts = [TITLE, "", LEAD, ""]
-    for heading, bullets in SECTIONS:
-        parts.append(heading)
-        parts.extend("- " + item for item in bullets)
-        parts.append("")
-    parts.append(
-        "Sources: aggregated international reporting (AP, NPR, Democracy Now!, UN News, "
-        "UNFCCC, CNBC, Reuters/Business Times) for 11 November 2026."
-    )
-    return "\n".join(parts).rstrip() + "\n"
-
-
-def write_all(text: str) -> list:
-    """Write the summary to every expected destination. Returns written paths."""
-    written = []
-
-    try:
-        os.makedirs("output", exist_ok=True)
-        with open("output/entry.txt", "w", encoding="utf-8") as fh:
-            fh.write(text)
-        written.append(os.path.abspath("output/entry.txt"))
-    except OSError as exc:
-        print("warning: could not write output/entry.txt:", exc, file=sys.stderr)
-
-    try:
-        with open("entry.txt", "w", encoding="utf-8") as fh:
-            fh.write(text)
-        written.append(os.path.abspath("entry.txt"))
-    except OSError as exc:
-        print("warning: could not write entry.txt:", exc, file=sys.stderr)
-
-    # Optional absolute path used by container graders; safe to skip if read-only.
-    try:
-        os.makedirs("/output", exist_ok=True)
-        with open("/output/entry.txt", "w", encoding="utf-8") as fh:
-            fh.write(text)
-        written.append("/output/entry.txt")
-    except OSError:
-        pass
-
-    if not written:
-        raise SystemExit("error: could not write the summary to any destination")
-
-    return written
-
-
-def main() -> int:
-    text = build_summary()
-    written = write_all(text)
-    for path in written:
-        print("wrote", path)
-    print("words:", len(text.split()))
-    print("summary generated successfully")
-    return 0
-
+def main():
+    summary_text = generate_summary()
+    encoded = summary_text.encode('ascii')
+    byte_count = len(encoded)
+    
+    print(f"Generated summary byte count: {byte_count}")
+    if not (1900 <= byte_count <= 1999):
+        print(f"ERROR: Byte count {byte_count} out of range [1900, 1999]", file=sys.stderr)
+        sys.exit(1)
+        
+    os.makedirs("output", exist_ok=True)
+    
+    with open("entry.txt", "wb") as f:
+        f.write(encoded)
+        
+    with open("output/entry.txt", "wb") as f:
+        f.write(encoded)
+        
+    print("Successfully wrote summary to entry.txt and output/entry.txt")
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()
